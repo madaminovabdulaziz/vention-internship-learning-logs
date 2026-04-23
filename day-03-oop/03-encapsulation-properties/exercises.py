@@ -174,7 +174,7 @@ class Circle:
     
     @radius.setter
     def radius(self, value):
-        if isinstance(value, (int, float)):
+        if not isinstance(value, (int, float)):
             raise TypeError("NaN")
         if value <= 0:
             raise ValueError("I need non zero")
@@ -219,36 +219,76 @@ except TypeError as e:
 
 # YOUR CODE HERE
 
+class Circle:
+
+    PI = 3.14159
+    def __init__(self, radius):
+        self._radius = radius
+
+    
+    @property
+    def radius(self):
+        return self._radius
+    
+    @property
+    def area(self):
+        return self.PI * self._radius**2
+    
+    @property
+    def diameter(self):
+        return 2 * self._radius
+    
+    @property
+    def circumference(self):
+        return 2 * self.PI * self._radius
+    
+    @radius.setter
+    def radius(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("NaN")
+        if value <= 0:
+            raise ValueError("I need non zero")
+        self._radius = value
+
+
+c = Circle(5)
+print(c.area)            # 78.53975
+print(c.diameter)        # 10
+print(c.circumference)   # 31.4159
+
+c.radius = 10
+print(c.area)  
+
 
 # =============================================================================
 # EXERCISE 6 🔴 — PREDICT: the infinite recursion trap
 # =============================================================================
 # Look at this code. Will it work? What will happen?
 #
-# class Broken:
-#     def __init__(self, value):
-#         self.value = value       # note: NOT self._value
-#
-#     @property
-#     def value(self):
-#         return self.value        # hmmm...
-#
-#     @value.setter
-#     def value(self, v):
-#         self.value = v           # hmmm...
-#
-# b = Broken(5)
-#
+class Broken:
+    def __init__(self, value):
+        self._value = value       # note: NOT self._value
+
+    @property
+    def value(self):
+        return self._value        # hmmm...
+
+    @value.setter
+    def value(self, v):
+        self._value = v           # hmmm...
+
+b = Broken(5)
+
 # YOUR PREDICTION (before running):
 #   - Does `Broken(5)` succeed? Why or why not?
 #   - If it crashes, what error?
-#
+
 # After predicting, run it. Understand exactly what went wrong.
 # Then fix the class (use self._value for storage) and test:
-#   b = Broken(5)
-#   print(b.value)    # 5
-#   b.value = 10
-#   print(b.value)    # 10
+b = Broken(5)
+print(b.value)    # 5
+b.value = 10
+print(b.value)    # 10
 
 
 # YOUR PREDICTION, THEN THE FIXED VERSION HERE
@@ -302,6 +342,60 @@ except TypeError as e:
 # YOUR CODE HERE
 
 
+class BankAccount:
+    def __init__(self, owner, initial_balance=0):
+        self.owner = owner
+        self.balance = initial_balance
+
+
+    @property
+    def balance(self):
+        return self._balance
+    
+    @balance.setter
+    def balance(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("Amount shoulbe interger or float!")
+
+        if value <= 0:
+            raise ValueError("Amount can not be negative or zero!")        
+        
+        self._balance = value
+
+    
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Amount can not be negative or zero!")        
+        if amount > self.balance:
+            raise ValueError("Insufficient funds!")
+
+        self.balance -= amount
+
+
+    def __repr__(self):
+        return f"BankAccount(owner={self.owner}, balance={self.balance})"
+    
+alice = BankAccount("Alice", 1000)
+print(alice.balance)        # 1000  (via property getter)
+alice.deposit(500)
+print(alice.balance)        # 1500
+
+try:
+    alice.balance = -10     # through setter — ValueError
+except ValueError as e:
+    print("Caught:", e)
+
+try:
+    alice.balance = "hi"    # through setter — TypeError
+except TypeError as e:
+    print("Caught:", e)
+
+
+
 # =============================================================================
 # EXERCISE 8 🟣 — Temperature with linked properties (the elegant demo)
 # =============================================================================
@@ -336,6 +430,46 @@ except TypeError as e:
 
 
 # YOUR CODE HERE
+
+class Temperature:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    
+    @property
+    def celsius(self):
+        return self._celsius
+    
+
+    @property
+    def fahrenheit(self):
+        return self.celsius * 9/5 + 32
+    
+
+    @celsius.setter
+    def celsius(self, celsius):
+        self._celsius = celsius
+
+    @fahrenheit.setter
+    def fahrenheit(self, value):
+        self._celsius = (value - 32) * 5/9
+    
+
+
+    
+t = Temperature(100)
+print(t.celsius)        # 100
+print(t.fahrenheit)     # 212.0
+
+t.fahrenheit = 32
+print(t.celsius)        # 0.0
+print(t.fahrenheit)     # 32.0
+
+t.celsius = -40
+print(t.fahrenheit) 
+
+
+
 
 
 # =============================================================================
@@ -377,32 +511,58 @@ except TypeError as e:
 
 # YOUR CODE HERE (Phase 1 and Phase 2, both)
 
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    @property
+    def email(self):
+        return self._email
+    
+    @email.setter
+    def email(self, value: str):
+        if "@" not in value:
+            raise ValueError("Email is not correct!")
+        
+        self._email = value.strip().lower()
+
+
+    
+u = User("Alice", "  Alice@Example.COM  ")
+print(u.email)           # alice@example.com  (stripped + lowered)
+
+try:
+    u.email = "not-an-email"
+except ValueError as e:
+    print("Caught:", e)
+
 
 # =============================================================================
 # EXERCISE 10 🔴 — PREDICT: public vs property
 # =============================================================================
-# class A:
-#     def __init__(self):
-#         self.x = 10
-#
-# class B:
-#     def __init__(self):
-#         self._x = 10
-#     @property
-#     def x(self):
-#         return self._x
-#
-# a = A()
-# b = B()
-#
+class A:
+    def __init__(self):
+        self.x = 10
+
+class B:
+    def __init__(self):
+        self._x = 10
+    @property
+    def x(self):
+        return self._x
+
+a = A()
+b = B()
+
 # For EACH of these, predict the result — works or raises?
 #
-# print(a.x)              # PREDICTION:
-# print(b.x)              # PREDICTION:
-# a.x = 99                # PREDICTION:
-# b.x = 99                # PREDICTION:   ← tricky
-# print(a.x)              # PREDICTION:
-# print(b.x)              # PREDICTION:
+print(a.x)              # PREDICTION: 10
+print(b.x)              # PREDICTION: 10
+a.x = 99                # PREDICTION: passes
+b.x = 99                # PREDICTION:   Will trigegr an eror← tricky
+print(a.x)              # PREDICTION: 99
+print(b.x)              # PREDICTION: 10
 #
 # The tricky one: `b.x = 99`. Does it work? Why or why not?
 # Write your reasoning before running. Then run and verify.
@@ -412,6 +572,7 @@ except TypeError as e:
 
 
 # YOUR CODE HERE
+
 
 
 # =============================================================================
@@ -427,3 +588,10 @@ except TypeError as e:
 #
 # 3. Name one real-world class (from a library you've used or can imagine)
 #    where properties would make sense. Explain in 2 sentences.
+
+
+# We should reach property when we need to type checking, validation etc
+
+# It will cause recursion, infinte loop
+
+# email validator
