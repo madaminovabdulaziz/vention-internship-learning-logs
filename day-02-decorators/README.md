@@ -6,6 +6,7 @@
 2. Decorator basics (`@decorator` syntax)
 3. Preserving metadata with `@wraps`
 4. Decorators with arguments (three-layer pattern)
+5. Chaining decorators (stacking multiple)
 
 ## What I built
 
@@ -28,3 +29,4 @@
 - `02-basics/` — decorator basics + 5 exercises
 - `03-preserving-metadata/` — `@wraps` + 3 exercises
 - `04-with-arguments/` — three-layer pattern + 4 exercises (including `@retry`)
+- `05-chaining/` — stacking `@log_calls` over `@timer` on the same function, order of execution
