@@ -460,3 +460,8 @@ except ValueError as e:
 # 1. I was really surprised by the last exercise, which is ex 9. Because, I needed to use dict/list manipulations
 # 2. I will use class attribute when definign fixed value thins and things that can be shated across all instances
 # 3. The mutables (list, dict, set) always goes to __init__ constructor
+
+
+
+
+

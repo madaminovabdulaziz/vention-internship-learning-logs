@@ -210,3 +210,15 @@ print(add(2))    # 20
 reset()
 print(add(1))    # 11   (back to start=10, plus 1)
 
+
+
+x = "global"
+
+def outer():
+    x = "enclosing"
+    def inner():
+        x = "local"
+        print(x)      
+    inner()
+
+outer()
